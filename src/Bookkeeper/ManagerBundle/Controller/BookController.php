@@ -23,8 +23,15 @@ class BookController extends Controller
         $em = $this->getDoctrine()->getManager();
         $book = $em->getRepository('BookkeeperManagerBundle:Book')->find($id);
 
+        $delete_form = $this->createFormBuilder()
+                            ->setAction($this->generateUrl('book_delete', array('id' => $id)))
+                            ->setMethod('DELETE')
+                            ->add('submit', 'submit', array('label' => 'Delete book'))
+                            ->getForm();
+
         return $this->render('BookkeeperManagerBundle:Book:show.html.twig', array(
             'book' => $book,
+            'delete_form' => $delete_form->createView(),
         ));
     }
 
@@ -118,6 +125,23 @@ class BookController extends Controller
 
     public function deleteAction( Request $request, $id )
     {
+        $delete_form = $this->createFormBuilder()
+            ->setAction($this->generateUrl('book_delete', array('id' => $id)))
+            ->setMethod('DELETE')
+            ->add('submit', 'submit', array('label' => 'Delete book'))
+            ->getForm();
+
+        $delete_form->handleRequest($request);
+
+        if($delete_form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $book = $em->getRepository('BookkeeperManagerBundle:Book')->find($id);
+            $em->remove($book);
+            $em->flush();
+        }
+        $this->get('session')->getFlashBag()->add('msg', 'Your book has been deleted!');
+
+        return $this->redirect($this->generateUrl('book'));
 
     }
 
