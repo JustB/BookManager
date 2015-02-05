@@ -1,1 +1,9 @@
-<p>Edit page</p>
+{% extends '::base.html.twig' %}
+
+{% block body %}
+    {{ form(form) }}
+
+    <ul>
+        <li><a href="{{ path('book') }}">« Book Manager</a></li>
+    </ul>
+{% endblock %}
